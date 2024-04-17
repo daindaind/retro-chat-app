@@ -1,0 +1,13 @@
+@font-face {
+  font-family: "Galmuri14";
+  font-weight: normal;
+  src: url("./fonts/Galmuri14") format("truetype");
+}
+
+body {
+  font-family: "Galmuri14";
+}
+
+* {
+  margin: 0px;
+}
