@@ -1,8 +1,6 @@
-# React + Vite
+# RETRO CHAT APP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Node.js 교과서 (개정 3판) 12장 - socket.io를 활용한 실시간 채팅 서비스 구현 복습을 위한
+chatting site 구현
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+👾 👻
