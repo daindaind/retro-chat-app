@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import * as S from "./ChattingList.style";
-import getChattingList from "../../api/chat/getChattingList";
 import Window from "../../uis/window/Window";
 import { Link, useNavigate } from "react-router-dom";
 import enterRoom from "../../api/room/enterRoom";
+import useGetChattingList from "../../hooks/useGetChattingList";
+import CatLoadingSpinner from "../../uis/loadingSpinner/CatLoadingSpinner";
 
 const ChattngList = () => {
-  const [chatList, setChatList] = useState();
+  const { data: chatList, error, loading } = useGetChattingList();
   const navigate = useNavigate();
 
   const enterChatRoom = async (id, password, title) => {
@@ -19,8 +19,9 @@ const ChattngList = () => {
       const res = await enterRoom(id, result);
       if (res) {
         const chats = res.chats;
+        const userColor = res.user;
         navigate(`/chat/${id}`, {
-          state: { title, id, chats, password },
+          state: { title, id, chats, password, userColor },
         });
       }
     } catch (e) {
@@ -29,15 +30,9 @@ const ChattngList = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await getChattingList();
-      if (res) {
-        setChatList(res);
-      }
-    };
-    fetchData();
-  }, []);
+  if (error) return <h3>에러가 발생했습니다.</h3>;
+
+  if (loading) return <CatLoadingSpinner />;
 
   return (
     <S.Container>
@@ -60,7 +55,7 @@ const ChattngList = () => {
           </S.ChatContent>
         </S.ChatContentContainer>
 
-        {chatList &&
+        {chatList && chatList.length > 0 ? (
           chatList.map(({ _id: id, title, owner, max, password }) => {
             return (
               <S.ChatListContainer key={id}>
@@ -83,7 +78,10 @@ const ChattngList = () => {
                 </S.BtnContainer>
               </S.ChatListContainer>
             );
-          })}
+          })
+        ) : (
+          <div>채팅방이 없어요.</div>
+        )}
       </Window>
     </S.Container>
   );

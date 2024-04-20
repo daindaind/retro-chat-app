@@ -25,6 +25,15 @@ const ChatContaier = styled.div`
 
   overflow: scroll;
 
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+  }
+
   h3 {
     color: black;
     font-size: 16px;
@@ -34,15 +43,20 @@ const ChatContaier = styled.div`
 const ChatMe = styled.div`
   margin-left: ${(props) => (props.$isMe ? "auto" : "0")};
 
-  h5 {
-    color: ${(props) => (props.$color ? props.$color : "black")};
-    font-size: 13px;
-  }
-
   p {
     color: black;
     font-size: 14px;
   }
+`;
+
+const UserNameContainer = styled.div`
+  display: flex;
+  color: ${(props) => (props.$user ? props.$user : "black")};
+  font-size: 13px;
+`;
+
+const UserNameText = styled.h5`
+  margin-left: ${(props) => (props.$isMe ? "auto" : "0")};
 `;
 
 const ChatOther = styled(ChatMe)`
@@ -52,10 +66,22 @@ const ChatOther = styled(ChatMe)`
 const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 5px;
 
   justify-content: center;
   align-items: center;
+
+  min-width: 250px;
+`;
+
+const InputLayout = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  width: 100%;
 `;
 
 export {
@@ -65,4 +91,7 @@ export {
   ChatContaier,
   InputContainer,
   RoomLeaveLayout,
+  UserNameContainer,
+  UserNameText,
+  InputLayout,
 };

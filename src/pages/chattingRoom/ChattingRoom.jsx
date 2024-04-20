@@ -7,7 +7,7 @@ import Input from "../../components/Input/Input";
 import Button from "../../components/button/Button";
 import sendChat from "../../api/chat/sendChat";
 import socket from "../../server";
-import enterRoom from "../../api/room/enterRoom";
+import RandomEmojis from "../../utils/randomEmojis";
 
 const ChattingRoom = () => {
   const { state } = useLocation();
@@ -15,32 +15,28 @@ const ChattingRoom = () => {
   const [inputValue, setInputValue] = useState("");
   const [chatList, setChatList] = useState([]);
   const [enterMessage, setEnterMessage] = useState("");
-  const [userColor, setUserColor] = useState("");
+  const [userEmoji, setUserEmoji] = useState(null);
   // const [img, setImg] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await enterRoom(state.id, state.password);
-      if (res) {
-        socket("chat").emit("chats", state.id);
-        socket("chat").on("renderChats", (data) => {
-          setChatList(data);
-        });
-        setUserColor(res.user);
-      }
+      socket("chat").emit("chats", state.id);
+      socket("chat").on("renderChats", (data) => {
+        setChatList(data);
+      });
     };
 
     fetchData();
-  }, []);
+  }, [state.id]);
 
   useEffect(() => {
     socket("chat").emit("join", state.id);
-    console.log("chat");
     socket("chat").on("join", (data) => {
       setEnterMessage(data.chat);
-      console.log(data);
     });
     socket("chat").emit("chats", state.id);
+
+    setUserEmoji(RandomEmojis());
   }, []);
 
   const leavingChatRoom = () => {
@@ -52,16 +48,26 @@ const ChattingRoom = () => {
   };
 
   const sendChatMessage = async () => {
-    try {
-      const res = await sendChat(state.id, inputValue);
-      if (res) {
-        socket("chat").emit("chats", state.id);
+    if (!inputValue) {
+      alert("내용 좀 입력해주세요");
+    } else {
+      try {
+        const res = await sendChat(state.id, inputValue);
+        if (res) {
+          socket("chat").emit("chats", state.id);
+        }
+      } catch (e) {
+        console.error(e);
+        alert("이런! 오류가 발생했어요.");
+      } finally {
+        setInputValue("");
       }
-    } catch (e) {
-      console.error(e);
-      alert("이런! 오류가 발생했어요.");
-    } finally {
-      setInputValue("");
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      sendChatMessage();
     }
   };
 
@@ -79,8 +85,17 @@ const ChattingRoom = () => {
           {chatList.length >= 1 &&
             chatList.map(({ user, chat, gif, _id: id }) => {
               return (
-                <S.ChatMe key={id} $isMe={userColor === user ? true : false}>
-                  <h5>👽 {user}</h5>
+                <S.ChatMe
+                  key={id}
+                  $isMe={state.userColor === user ? true : false}
+                >
+                  <S.UserNameContainer $user={user}>
+                    <S.UserNameText
+                      $isMe={state.userColor === user ? true : false}
+                    >
+                      {userEmoji} {user}
+                    </S.UserNameText>
+                  </S.UserNameContainer>
                   <p>{chat}</p>
                 </S.ChatMe>
               );
@@ -88,23 +103,27 @@ const ChattingRoom = () => {
         </S.ChatContaier>
       </Window>
 
-      <S.InputContainer>
-        <Input type="file" />
-
-        <Input
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-          }}
-          placeholder="말 걸어보세요"
-        />
-        <Button
-          width="60px"
-          height="30px"
-          content="보내기"
-          onClick={sendChatMessage}
-        />
-      </S.InputContainer>
+      <S.InputLayout>
+        <S.InputContainer>
+          <Input type="file" />
+        </S.InputContainer>
+        <S.InputContainer>
+          <Input
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
+            placeholder="말 걸어보세요"
+            onKeyPress={handleKeyDown}
+          />
+          <Button
+            width="60px"
+            height="30px"
+            content="보내기"
+            onClick={sendChatMessage}
+          />
+        </S.InputContainer>
+      </S.InputLayout>
     </S.Container>
   );
 };

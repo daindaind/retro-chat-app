@@ -1,6 +1,6 @@
 import * as S from "./Input.style";
 
-const Input = ({ width, value, onChange, placeholder, type }) => {
+const Input = ({ width, value, onChange, placeholder, type, onKeyPress }) => {
   return (
     <S.InputLayout
       $width={width}
@@ -8,6 +8,7 @@ const Input = ({ width, value, onChange, placeholder, type }) => {
       onChange={onChange}
       type={type}
       placeholder={placeholder}
+      onKeyPress={onKeyPress}
     />
   );
 };
