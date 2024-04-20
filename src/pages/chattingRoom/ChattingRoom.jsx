@@ -1,45 +1,69 @@
 import * as S from "./ChattingRoom.style";
-import Window from "../../uis/window/Window";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import Window from "../../uis/window/Window";
 import Input from "../../components/Input/Input";
 import Button from "../../components/button/Button";
-import leaveRoom from "../../api/room/leaveRoom";
 import sendChat from "../../api/chat/sendChat";
-import { useEffect, useState } from "react";
+import socket from "../../server";
+import enterRoom from "../../api/room/enterRoom";
 
 const ChattingRoom = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [chat, setChat] = useState();
-  const [chatList, setChatList] = useState();
+  const [inputValue, setInputValue] = useState("");
+  const [chatList, setChatList] = useState([]);
+  const [enterMessage, setEnterMessage] = useState("");
+  const [userColor, setUserColor] = useState("");
+  // const [img, setImg] = useState("");
 
-  const leavingChatRoom = async () => {
-    try {
-      const res = await leaveRoom(state.id);
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await enterRoom(state.id, state.password);
       if (res) {
-        navigate("/");
+        socket("chat").emit("chats", state.id);
+        socket("chat").on("renderChats", (data) => {
+          setChatList(data);
+        });
+        setUserColor(res.user);
       }
-    } catch (e) {
-      console.error(e);
-      alert("이런! 오류가 발생했어요.");
-    }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    socket("chat").emit("join", state.id);
+    console.log("chat");
+    socket("chat").on("join", (data) => {
+      setEnterMessage(data.chat);
+      console.log(data);
+    });
+    socket("chat").emit("chats", state.id);
+  }, []);
+
+  const leavingChatRoom = () => {
+    socket("chat").emit("exit", () => {
+      // console.log(data);
+    });
+
+    navigate("/");
   };
 
   const sendChatMessage = async () => {
     try {
-      const res = await sendChat(chat);
+      const res = await sendChat(state.id, inputValue);
       if (res) {
-        console.log(res);
+        socket("chat").emit("chats", state.id);
       }
     } catch (e) {
       console.error(e);
       alert("이런! 오류가 발생했어요.");
+    } finally {
+      setInputValue("");
     }
   };
-
-  useEffect(() => {
-    setChatList(state.chats);
-  }, [state]);
 
   return (
     <S.Container>
@@ -50,23 +74,27 @@ const ChattingRoom = () => {
       </S.RoomLeaveLayout>
       <Window>
         <S.ChatContaier>
-          <h3>~님이 입장하셨습니다.</h3>
+          <h3>{enterMessage}</h3>
 
-          {chatList &&
-            chatList.map(({ user, chat, gif, _id: id }) => (
-              <S.ChatMe key={id}>
-                <h5>👽 {user}</h5>
-                <p>{chat}</p>
-              </S.ChatMe>
-            ))}
+          {chatList.length >= 1 &&
+            chatList.map(({ user, chat, gif, _id: id }) => {
+              return (
+                <S.ChatMe key={id} $isMe={userColor === user ? true : false}>
+                  <h5>👽 {user}</h5>
+                  <p>{chat}</p>
+                </S.ChatMe>
+              );
+            })}
         </S.ChatContaier>
       </Window>
+
       <S.InputContainer>
         <Input type="file" />
+
         <Input
-          value={chat}
+          value={inputValue}
           onChange={(e) => {
-            setChat(e.target.value);
+            setInputValue(e.target.value);
           }}
           placeholder="말 걸어보세요"
         />

@@ -32,7 +32,7 @@ const ChatContaier = styled.div`
 `;
 
 const ChatMe = styled.div`
-  margin-left: auto;
+  margin-left: ${(props) => (props.$isMe ? "auto" : "0")};
 
   h5 {
     color: ${(props) => (props.$color ? props.$color : "black")};

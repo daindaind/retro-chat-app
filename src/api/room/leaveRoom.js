@@ -11,7 +11,7 @@ const leaveRoom = async (id) => {
         withCredentials: true,
       }
     );
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (error) {
     console.error(error);

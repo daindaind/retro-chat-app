@@ -20,7 +20,7 @@ const ChattngList = () => {
       if (res) {
         const chats = res.chats;
         navigate(`/chat/${id}`, {
-          state: { title, id, chats },
+          state: { title, id, chats, password },
         });
       }
     } catch (e) {
@@ -38,8 +38,6 @@ const ChattngList = () => {
     };
     fetchData();
   }, []);
-
-  console.log(chatList);
 
   return (
     <S.Container>

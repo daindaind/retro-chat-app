@@ -13,7 +13,7 @@ const createChattingRoom = async ({ title, password, max }) => {
         withCredentials: true,
       }
     );
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (error) {
     console.error(error);
