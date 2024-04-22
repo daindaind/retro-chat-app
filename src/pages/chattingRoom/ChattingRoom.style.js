@@ -84,6 +84,11 @@ const InputLayout = styled.div`
   width: 100%;
 `;
 
+const ImgLayout = styled.img`
+  width: 200px;
+  height: 200px;
+`;
+
 export {
   Container,
   ChatMe,
@@ -94,4 +99,5 @@ export {
   UserNameContainer,
   UserNameText,
   InputLayout,
+  ImgLayout,
 };
