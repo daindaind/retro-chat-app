@@ -1,8 +1,11 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import AppLayout from "./pages/AppLayout";
-import ChattngList from "./pages/chattingList/ChattngList";
-import RoomCreatePage from "./pages/roomCreate/RoomCreatePage";
-import ChattingRoom from "./pages/chattingRoom/ChattingRoom";
+import {
+  AppLayout,
+  ChattingRoom,
+  ChattngList,
+  RoomCreatePage,
+  PostPage,
+} from "./pages";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/chat/:id",
         element: <ChattingRoom />,
+      },
+      {
+        path: "/post",
+        element: <PostPage />,
       },
     ],
   },
